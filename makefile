@@ -1,20 +1,30 @@
+PROJECT_NAME:= i2c-lcd
 CC :=gcc
+SRC_DIR:= source
+INC_DIR:= include/ 
+OBJ_DIR := output
+BIN_DIR := bin
 
+SRC:= $(wildcard $(SRC_DIR)/*.c)
+OBJ:= $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+EXE:= $(BIN_DIR)/$(PROJECT_NAME)
 .PHONY: run
 run: build
-	@./bin/main
+	@ ./$(EXE)
 
 .PHONY: build
-build: ./bin/main 
+build: $(EXE) 
 
-./bin/main: ./output/main.o ./output/i2c-lcd.o
-	@$(CC) $^ -o $@
-./output/main.o: ./source/main.c
-	@$(CC) -c $< -o $@ -I ./include
+$(EXE): $(OBJ)
+	@ $(CC) $^ -o $@
 
-./output/i2c-lcd.o: ./source/i2c-lcd.c
-	@$(CC) -c $< -o $@ -I ./include 
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@ $(CC) -c $< -o $@ -I $(INC_DIR)
 
 .PHONY: clean
 clean:
-	@rm -f ./bin/* ./output/*
+	@ rm -r ./bin/* ./output/*
+
+test:
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@ $(CC) -c $< -o $@ -I $(INC_DIR)
